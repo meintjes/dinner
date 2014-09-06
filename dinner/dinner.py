@@ -1,11 +1,13 @@
-from flask import Flask
+from flask import Flask, render_template
+import sys
 
 app = Flask(__name__)
 
 
 @app.route("/")
-def foo():
-    return "Hello, world!"
+def home():
+    return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run()
+    debug = "debug" in sys.argv
+    app.run(debug=debug)
