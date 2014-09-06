@@ -1,2 +1,4 @@
 venv/
 dinner/static/include/*
+parse_api_keys.js
+init_fb.js
