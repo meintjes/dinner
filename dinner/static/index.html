@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="dinner">
 <head>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-  <div ng-app="dinner" ng-controller="LoginCtrl">
+  <div ng-view>
   </div>
 
   <script type="text/javascript" src="/include/parse-sdk/lib/parse.min.js"></script>
   <script type="text/javascript" src="/parse_api_keys.js"></script>
   <script type="text/javascript" src="/init_fb.js"></script>
-  <script type="text/javascript" src="/include/angular/angular.min.js" ></script>
+  <script type="text/javascript" src="/include/angular/angular.js" ></script>
+  <script type="text/javascript" src="/include/angular-route/angular-route.js" ></script>
   <script type="text/javascript" src ="/js/app.js"></script>
   <script type="text/javascript" src ="/js/LoginCtrl.js"></script>
 </body>
