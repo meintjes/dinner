@@ -93,30 +93,79 @@ app.controller("HomeCtrl", function($scope, fb, parseQuery, $timeout) {
                 // Construct the timePreferences dictionary from the array.
                 var timePreferences = {};
                 for (var i = 0; i < response.length; i++) {
-                    var id = response[i].id;
-                    timePreferences[id] = response[i];
-
                     // Convert to Date for the timepicker.
-                    timePreferences[id].startTime = new Date(timePreferences[id].attributes.startTime.iso);
-                    timePreferences[id].endTime = new Date(timePreferences[id].attributes.endTime.iso);
+                    response[i].startTime = new Date(response[i].attributes.startTime.iso);
+                    response[i].endTime = new Date(response[i].attributes.endTime.iso);
+
+                    var id = response[i].get("createdBy").id;
+                    timePreferences[id] = timePreferences[id] || [];
+                    timePreferences[id].push(response[i]);
                 }
 
                 group.timePreferences = timePreferences;
                 group.timePreferencesLoaded = true;
+                $scope.getDinnerTimes(group);
                 $scope.$apply();
             })
         })
     };
 
     $scope.getDinnerTimes = function(group) {
-        var groups = {};
-        console.log(group.attributes.timePreferences);
-        for (var id in group.attributes.timePreferences) {
-            if (group.hasOwnProperty(id)) {
-                console.log(id);
+        function getMinutes(hours, minutes) {
+            return (hours * 60) + minutes;
+        }
+        function makeAvailabilityForPreference(timePreference) {
+            var ret = function(dinnerTime) {
+                var startTime = timePreference.get("startTime");
+                var startTimeMinutes = getMinutes(
+                    startTime.getHours(),
+                    startTime.getMinutes()
+                );
+                var endTime = timePreference.get("endTime");
+                var endTimeMinutes = getMinutes(
+                    endTime.getHours(),
+                    endTime.getMinutes()
+                );
+                var dinnerTimeMinutes = getMinutes(dinnerTime.hours, dinnerTime.minutes);
+                return (
+                    startTimeMinutes <= dinnerTimeMinutes &&
+                    dinnerTimeMinutes <= endTimeMinutes
+                );
+            };
+            return ret;
+        }
+        function makeAvailability(timePreferences) {
+            var funcs = [];
+            for (var i = 0; i < timePreferences.length; i++) {
+                funcs.push(makeAvailabilityForPreference(timePreferences[i]));
+            }
+            return function(startTime) {
+                for (var i = 0; i < funcs.length; i++) {
+                    if (!funcs[i](startTime)) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+        }
+
+        var groups = [];
+        var timePreferences = group.timePreferences;
+        for (var id in timePreferences) {
+            if (timePreferences.hasOwnProperty(id)) {
+                groups.push({
+                    isAvailableForTime: makeAvailability(timePreferences[id]),
+                    getPreferredPlace: function() {
+                        return "North Quad";
+                    }
+                });
             }
         }
-        $scope.$apply();
+        group.dinnerTimes = getNBestTimes(groups, 17, 20, 3);
+        for (var i = 0; i < group.dinnerTimes.length; i++) {
+            group.dinnerTimes[i].place = getPlaceForTime(groups, group.dinnerTimes[i]);
+        }
+        $scope.getDinners(group);
     }
 
     $scope.userGroups = [];
@@ -128,7 +177,6 @@ app.controller("HomeCtrl", function($scope, fb, parseQuery, $timeout) {
                 $scope.userGroups = response;
                 for (var i = 0; i < $scope.userGroups.length; i++) {
                     $scope.loadTimePreferences($scope.userGroups[i]);
-                    $scope.getDinnerTimes($scope.userGroups[i]);
                 }
                 $scope.$apply()
             });
@@ -162,7 +210,9 @@ app.controller("HomeCtrl", function($scope, fb, parseQuery, $timeout) {
         var timePreferences = group.timePreferences;
         for (var id in timePreferences) {
             if (timePreferences.hasOwnProperty(id)) {
-                timePreferences[id].save();
+                for (var i = 0; i < timePreferences[id].length; i++) {
+                    timePreferences[id][i].save();
+                }
             }
         }
     }
@@ -186,4 +236,61 @@ app.controller("HomeCtrl", function($scope, fb, parseQuery, $timeout) {
 
         $scope.loadGroups();
     }
+
+    function getDay() {
+        var date = new Date();
+        return date.getYear() + "-" + date.getMonth() + "-" + date.getDay();
+    }
+
+    $scope.getEvent = function(dinner) {
+        return dinner.place + " at " + (dinner.hours % 12) + ":" + dinner.minutes;
+    }
+
+    $scope.getDinners = function(group) {
+        var q = new Parse.Query("DinnerAttendance");
+        q.equalTo("group", group);
+        q.equalTo("day", getDay());
+
+        var dinnerTimes = [];
+        for (var i = 0; i < group.dinnerTimes.length; i++) {
+            dinnerTimes.push($scope.getEvent(group.dinnerTimes[i]));
+        }
+        q.containedIn("event", dinnerTimes);
+
+        parseQuery.find(q).then(function(response) {
+            var dinners = {};
+            for (var i = 0; i < response.length; i++) {
+                var event = response[i].get("event");
+                dinners[event] = dinners[event] || [];
+
+                dinners[event].push(response[i]);
+            }
+            group.dinners = dinners;
+            $timeout(function() {
+                console.log(dinners);
+                $scope.$apply();
+            });
+        });
+    }
+
+    $scope.rsvpToDinner = function(group, dinner) {
+        var q = new Parse.Query("DinnerAttendance");
+        q.equalTo("attendee", $scope.currentUser);
+        q.equalTo("group", group);
+        parseQuery.find(q).then(function(response) {
+            for (var i = 0; i < response.length; i++) {
+                response[i].destroy();
+            }
+
+            var DinnerAttendance = Parse.Object.extend("DinnerAttendance");
+            var dinnerAttendance = new DinnerAttendance();
+            dinnerAttendance.set("attendee", $scope.currentUser);
+            dinnerAttendance.set("day", getDay());
+            dinnerAttendance.set("group", group);
+            dinnerAttendance.set("event", $scope.getEvent(dinner));
+            dinnerAttendance.save();
+
+            $scope.loadGroups();
+        });
+    };
 });

@@ -60,3 +60,19 @@
 .time-remove {
     width: 20%;
 }
+
+.dinner-table {
+    width: 100%;
+}
+
+.col-dinner {
+    width: 40%;
+}
+
+.col-people {
+    width: 40%;
+}
+
+.col-rsvp {
+    width: 40%;
+}

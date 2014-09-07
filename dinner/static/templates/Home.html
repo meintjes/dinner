@@ -87,7 +87,7 @@
         <th>Remove</th>
       </thead>
       <tbody>
-        <tr ng-repeat="timePreferences in group.timePreferences | filter:{createdBy: currentUser}">
+        <tr ng-repeat="timePreferences in group.timePreferences[currentUser.id]">
           <td>
             <timepicker
               ng-model="timePreferences.attributes.startTime"
@@ -109,8 +109,25 @@
       </tbody>
     </table>
 
-    <div ng-repeat="dinnerTime in group.dinnerTimes">
-
-    </div>
+    <table ng-show="group.dinnerTimes" class="dinner-table">
+      <colgroup>
+        <col class="col-dinner" />
+        <col class="col-people" />
+        <col class="col-rsvp" />
+      </colgroup>
+      <thead>
+        <th>Dinner</th>
+        <th>People</th>
+        <th>RSVP</th>
+      </thead>
+      <tbody>
+        <tr ng-repeat="dinner in group.dinnerTimes">
+          <td>{{getEvent(dinner)}}</td>
+          <td>{{(group.dinners[getEvent(dinner)] || []).length | json}} going.</td>
+          <td><button ng-click="rsvpToDinner(group, dinner)">RSVP</button></td>
+        </tr>
+      </tbody>
+    </table>
+    {{dinners | json}}
   </div>
 </div>
