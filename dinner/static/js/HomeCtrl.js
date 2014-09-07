@@ -1,6 +1,9 @@
-app.controller("HomeCtrl", function($scope) {
+app.controller("HomeCtrl", function($scope, fb) {
     $scope.name = "Loading...";
-    FB.api("/me", function(response) {
-        $scope.name = response.name;
+    fb(function(FB) {
+        FB.api("/me", function(response) {
+            $scope.name = response.name;
+            $scope.$apply();
+        });
     });
 });

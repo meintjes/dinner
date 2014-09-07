@@ -1,35 +1,27 @@
-app.controller("LoginCtrl", function($scope) {
+app.controller("LoginCtrl", function($scope, fb) {
+    function redirectToHome() {
+        window.location = "/#/home";
+    }
     function tryLogin() {
-      Parse.FacebookUtils.logIn(null, {
-         success: function(user) {
-            window.location = "/#/home";
-         },
-         error: function(user, error) {
-           alert("User cancelled the Facebook login or did not fully authorize.");
-         }
-       });
+        Parse.FacebookUtils.logIn("public_profile,user_friends", {
+            success: function(user) {
+                redirectToHome();
+            },
+            error: function(user, error) {
+                alert("User cancelled the Facebook login or did not fully authorize.");
+            }
+        });
     }
     $scope.login = function() {
+        // TODO: Only show login button once Facebook has loaded.
         tryLogin();
     };
-    window.fbAsyncInit = function() {
-      Parse.FacebookUtils.init({
-        appId      : FACEBOOK_APP_ID, // Facebook App ID
-        cookie     : true, // enable cookies to allow Parse to access the session
-        xfbml      : true  // parse XFBML
-      });
+
+    fb(function(FB) {
         FB.getLoginStatus(function(response) {
-                if (response.status === "connected") {
-                    window.location = "/#/home";
-                }
+            if (response.status === "connected") {
+                redirectToHome();
             }
-        );
-    };
-    (function(d, s, id){
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
-        js.src = "//connect.facebook.net/en_US/all.js";
-        fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
+        });
+    });
 });
