@@ -154,4 +154,9 @@ app.controller("HomeCtrl", function($scope, fb, parseQuery, $timeout) {
             }
         }
     }
+
+    $scope.removeTimePreference = function(timePreference) {
+        timePreference.destroy();
+        $scope.loadGroups();
+    }
 });

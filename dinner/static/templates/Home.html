@@ -77,30 +77,38 @@
     <form class="form-horizontal">
       <button ng-click="addTimePreference(group)">Add time</button>
       <button ng-click="saveTimePreferences(group)">Save</button>
-      <div ng-repeat="timePreferences in group.timePreferences | filter:{createdBy: currentUser}">
-        <div class="form-group">
-          <div class="col-md-2">
-            Start time:
-          </div>
-          <div class="col-md-4">
-            <timepicker
-              ng-model="timePreferences.attributes.startTime"
-              hour-step="1"
-              minute-step="15"
-            />
-          </div>
-          <div class="col-md-2">
-            End time:
-          </div>
-          <div class="col-md-4">
-            <timepicker
-              ng-model="timePreferences.attributes.endTime"
-              hour-step="1"
-              minute-step="15"
-            />
-          </div>
-        </div>
-      </div>
-    </form>
+      <table class="time-table">
+        <colgroup>
+          <col class="time-start" />
+          <col class="time-end" />
+          <col class="time-remove" />
+        <thead>
+          <th>Start time</th>
+          <th>End time</th>
+          <th>Remove</th>
+        </thead>
+        <tbody>
+          <tr ng-repeat="timePreferences in group.timePreferences | filter:{createdBy: currentUser}">
+            <td>
+              <timepicker
+                ng-model="timePreferences.attributes.startTime"
+                hour-step="1"
+                minute-step="15"
+              />
+            </td>
+            <td>
+              <timepicker
+                ng-model="timePreferences.attributes.endTime"
+                hour-step="1"
+                minute-step="15"
+              />
+            </td>
+            <td>
+              <button ng-click="removeTimePreference(timePreferences)">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

@@ -44,3 +44,19 @@
 .group-member-remove {
     width: 20%;
 }
+
+.time-table {
+    width: 100%;
+}
+
+.time-start {
+    width: 40%;
+}
+
+.time-end {
+    width: 40%;
+}
+
+.time-remove {
+    width: 20%;
+}
