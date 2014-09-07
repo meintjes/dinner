@@ -243,7 +243,11 @@ app.controller("HomeCtrl", function($scope, fb, parseQuery, $timeout) {
     }
 
     $scope.getEvent = function(dinner) {
-        return dinner.place + " at " + (dinner.hours % 12) + ":" + dinner.minutes;
+        var minutes = dinner.minutes + "";
+        if (minutes.length == 1) {
+            minutes = "0" + minutes;
+        }
+        return dinner.place + " at " + (dinner.hours % 12) + ":" + minutes;
     }
 
     $scope.getDinners = function(group) {
