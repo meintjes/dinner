@@ -108,6 +108,17 @@ app.controller("HomeCtrl", function($scope, fb, parseQuery, $timeout) {
         })
     };
 
+    $scope.getDinnerTimes = function(group) {
+        var groups = {};
+        console.log(group.attributes.timePreferences);
+        for (var id in group.attributes.timePreferences) {
+            if (group.hasOwnProperty(id)) {
+                console.log(id);
+            }
+        }
+        $scope.$apply();
+    }
+
     $scope.userGroups = [];
     $scope.loadGroups = function() {
         var q = new Parse.Query("Group");
@@ -117,6 +128,7 @@ app.controller("HomeCtrl", function($scope, fb, parseQuery, $timeout) {
                 $scope.userGroups = response;
                 for (var i = 0; i < $scope.userGroups.length; i++) {
                     $scope.loadTimePreferences($scope.userGroups[i]);
+                    $scope.getDinnerTimes($scope.userGroups[i]);
                 }
                 $scope.$apply()
             });
@@ -155,8 +167,23 @@ app.controller("HomeCtrl", function($scope, fb, parseQuery, $timeout) {
         }
     }
 
-    $scope.removeTimePreference = function(timePreference) {
+    $scope.removeTimePreference = function(timePreference, group) {
+        // Remove from the group's time preference list.
+        var newTimePreferences = [];
+        var oldTimePreferences = group.get("timePreferences")[$scope.currentUser.id]
+        for (var i = 0; i < oldTimePreferences.length; i++) {
+            if (oldTimePreferences[i].id !== timePreference.id) {
+                newTimePreferences.push(oldTimePreferences[i]);
+            }
+        }
+        
+        var allTimePreferences = group.get("timePreferences");
+        allTimePreferences[$scope.currentUser.id] = newTimePreferences;
+
+        group.set("timePreferences", allTimePreferences)
+        group.save();
         timePreference.destroy();
+
         $scope.loadGroups();
     }
 });
