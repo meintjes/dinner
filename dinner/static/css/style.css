@@ -1,3 +1,46 @@
-body {
-  font-size: 22pt;
+.container {
+    width: 800px;
+}
+
+.header {
+    margin-bottom: 20px;
+
+    border-color: #000000;
+    border-style: none none solid none;
+    border-width: 1px;
+}
+
+.facebook-login {
+    background-color: #3b5998;
+    color: #FFFFFF;
+
+    border: solid #333 1px;
+    border-radius: 4px;
+
+    font-size: 16pt;
+    font-weight: 600;
+    font-family: "Lucida Grande", sans-serif;
+}
+
+.facebook-login:hover {
+    background-color: #5d7bba;
+}
+
+.login-form {
+    padding: 20px 0px;
+    text-align: center;
+}
+
+.group-table {
+    margin-top: 10px;
+
+    width: 100%;
+}
+
+.group-member-name {
+    width: 80%;
+}
+
+.group-member-remove {
+    width: 20%;
 }

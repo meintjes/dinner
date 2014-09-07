@@ -1,4 +1,4 @@
-var app = angular.module("dinner", ["ngRoute"]);
+var app = angular.module("dinner", ["ngRoute", "angularParse", "ui.bootstrap"]);
 
 app.config(["$routeProvider", function($routeProvider) {
     $routeProvider

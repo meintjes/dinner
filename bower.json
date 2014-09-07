@@ -19,6 +19,8 @@
     "angular": "~1.2.23",
     "bootstrap": "~3.2.0",
     "angular-route": "~1.2.23",
-    "parse-sdk": "~1.2.19"
+    "parse-sdk": "~1.2.19",
+    "angularparse": "~0.2.0",
+    "angular-bootstrap": "~0.11.0"
   }
 }
