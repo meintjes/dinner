@@ -152,10 +152,12 @@ function getPlaceForTime(group, time) {
 
     var winner = "";
     for (key in votes) {
-        if (winner === "" ||
-            (votes[key] > votes[winner]) ||
-            (votes[key] === votes[winner] && key > winner)) {
-            winner = key;
+        if (votes.hasOwnProperty(key)) {
+            if (winner === "" ||
+                (votes[key] > votes[winner]) ||
+                (votes[key] === votes[winner] && key > winner)) {
+                winner = key;
+            }
         }
     }
 

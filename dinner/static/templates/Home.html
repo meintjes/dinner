@@ -74,6 +74,15 @@
   <div ng-hide="userGroups.length">You have no groups.</div>
   <div ng-repeat="group in userGroups">
     <h4>{{group.attributes.name}}</h4>
+    <p>
+    Preferred place: <select ng-model="group.preferredPlace" ng-click="savePreferredPlace(group)">
+      <option value="North Quad">North Quad</option>
+      <option value="South Quad">South Quad</option>
+      <option value="East Quad">East Quad</option>
+      <option value="Mojo">Mojo</option>
+      <option value="La Marsa">La Marsa</option>
+    </select>
+    </p>
     <button ng-click="addTimePreference(group)">Add time</button>
     <button ng-click="saveTimePreferences(group)">Save</button>
     <table class="time-table">
@@ -122,8 +131,8 @@
       </thead>
       <tbody>
         <tr ng-repeat="dinner in group.dinnerTimes">
-          <td>{{getEvent(dinner)}}</td>
-          <td>{{(group.dinners[getEvent(dinner)] || []).length | json}} going.</td>
+          <td>{{getEvent(dinner, group)}}</td>
+          <td>{{(group.dinners[getTime(dinner)] || []).length | json}} going.</td>
           <td><button ng-click="rsvpToDinner(group, dinner)">RSVP</button></td>
         </tr>
       </tbody>
