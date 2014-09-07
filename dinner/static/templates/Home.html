@@ -1,5 +1,3 @@
-<a href="" ng-click="logout()">Log out</a>
-
 <div class="well">
   <button ng-click="toggleAddGroupDialog()" ng-bind="addGroupButtonText"></button>
 
@@ -72,10 +70,37 @@
   </div>
 </div>
 
-<div class="well">
-  <h3>My groups</h3>
+<div>
   <div ng-hide="userGroups.length">You have no groups.</div>
   <div ng-repeat="group in userGroups">
-    <h5>{{group.attributes.name}}</h5>
+    <h4>{{group.attributes.name}}</h4>
+    <form class="form-horizontal">
+      <button ng-click="addTimePreference(group)">Add time</button>
+      <button ng-click="saveTimePreferences(group)">Save</button>
+      <div ng-repeat="timePreferences in group.timePreferences | filter:{createdBy: currentUser}">
+        <div class="form-group">
+          <div class="col-md-2">
+            Start time:
+          </div>
+          <div class="col-md-4">
+            <timepicker
+              ng-model="timePreferences.attributes.startTime"
+              hour-step="1"
+              minute-step="15"
+            />
+          </div>
+          <div class="col-md-2">
+            End time:
+          </div>
+          <div class="col-md-4">
+            <timepicker
+              ng-model="timePreferences.attributes.endTime"
+              hour-step="1"
+              minute-step="15"
+            />
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
