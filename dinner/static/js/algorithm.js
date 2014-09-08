@@ -44,10 +44,19 @@ function getNBestTimes(group, firstPossibleHours, lastPossibleHours, numTimes) {
     if (bestTimes.length > numTimes) {
         var veryBestTimes = bestTimes.splice(0, numberOptimalTimes);
         var numTimesToAdd = numTimes - veryBestTimes.length;
-        return getDiverseTimes(veryBestTimes, bestTimes, numTimesToAdd);
+        return sortTimeArray(getDiverseTimes(veryBestTimes, bestTimes, numTimesToAdd));
     }
 
-    return bestTimes;
+    return sortTimeArray(bestTimes);
+}
+
+// Sorts an array of times and returns that array.
+function sortTimeArray(times) {
+    times.sort(function(a, b) {
+        return a.hours > b.hours || (a.hours === b.hours && a.minutes > b.minutes);
+    }
+    );
+    return times;
 }
 
 // Returns an array of times consisting of all of knownTimes and numTimesToAdd
@@ -152,12 +161,10 @@ function getPlaceForTime(group, time) {
 
     var winner = "";
     for (key in votes) {
-        if (votes.hasOwnProperty(key)) {
-            if (winner === "" ||
-                (votes[key] > votes[winner]) ||
-                (votes[key] === votes[winner] && key > winner)) {
-                winner = key;
-            }
+        if (winner === "" ||
+            (votes[key] > votes[winner]) ||
+            (votes[key] === votes[winner] && key > winner)) {
+            winner = key;
         }
     }
 
